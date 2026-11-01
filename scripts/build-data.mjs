@@ -7,8 +7,15 @@
 // exists, the release is downloaded from ontologyUrl.
 //
 // References: the ontology points to the old HAO bibliography by number
-// (http://api.hymao.org/api/ref/67864). data/hymao-refs.json holds the full
-// citations for those numbers. Later they will come from the TaxonWorks HAO project.
+// (http://api.hymao.org/api/ref/67864). data/hymao-refs.json holds the old
+// citations for those numbers. The sources of the HAO project in TaxonWorks
+// replace them: a TaxonWorks source that carries the old address as a URI
+// identifier is shown instead of the old citation, and sources not cited in
+// the ontology yet are listed too.
+//
+// TaxonWorks is read only when the project token is given in the environment
+// (never in a file):  TW_PROJECT_TOKEN=… npm run dev
+// On GitHub the token comes from the repository secret TW_PROJECT_TOKEN.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -159,10 +166,59 @@ for (const [id, d] of Object.entries(raw)) {
   if (d.replacedBy) t.rb = d.replacedBy
   terms[id] = t
 }
+// references, keyed by the old HAO number ("67810"), or "tw253232" for TaxonWorks sources the ontology
+// does not cite yet. Each: { t: plain citation, h: citation as HTML (TaxonWorks), tw, u: link, doi, hy: old number }
 const refs = {}
-for (const r of usedRefs) if (allRefs[r] && !/404/.test(allRefs[r])) refs[r] = allRefs[r]
+for (const r of usedRefs) if (allRefs[r] && !/404/.test(allRefs[r])) refs[r] = { t: allRefs[r], hy: r }
+const citedCount = Object.keys(refs).length
+
+const tw = await readTaxonWorks()
+if (tw) {
+  let linked = 0
+  for (const s of tw) {
+    const html = s.cached.replace(/<(?!\/?i>)[^>]*>/g, '') // keep italics only
+    const entry = { t: html.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&'), h: html, tw: s.id }
+    if (s.url) entry.u = s.url
+    if (s.doi) entry.doi = s.doi
+    const old = s.identifiers
+      .filter((i) => i.type === 'Identifier::Global::Uri')
+      .map((i) => (i.value.match(/hymao\.org\/api\/ref\/(\d+)/) || [])[1])
+      .filter(Boolean)
+    const cited = old.filter((n) => refs[n])
+    if (!cited.length) refs['tw' + s.id] = old.length ? { ...entry, hy: old[0] } : entry
+    for (const n of cited) {
+      refs[n] = { ...entry, hy: n }
+      linked++
+    }
+  }
+  console.log(`TaxonWorks: ${tw.length} sources in the HAO project, ${linked} of the ${citedCount} references cited in the ontology are linked`)
+}
 
 mkdirSync(resolve(root, 'public/data'), { recursive: true })
-writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, terms, refs, relations }))
+const taxonworks = tw ? { app: config.taxonworks.app, sources: tw.length } : null
+writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, terms, refs, relations, taxonworks }))
 const current = Object.values(terms).filter((t) => !t.o)
 console.log(`HAO ${version}: ${current.length} current terms, ${current.reduce((n, t) => n + (t.s?.length || 0), 0)} synonyms, ${Object.keys(refs).length} references → public/data/hao.json`)
+
+// All sources of the HAO project, with their identifiers; null when there is no token or TaxonWorks does not answer
+async function readTaxonWorks() {
+  const token = process.env.TW_PROJECT_TOKEN
+  if (!token) {
+    console.log('TaxonWorks: no TW_PROJECT_TOKEN given, using the old HAO citations only')
+    return null
+  }
+  const out = []
+  try {
+    for (let page = 1, pages = 1; page <= pages; page++) {
+      const url = `${config.taxonworks.api}/sources?in_project=true&per=500&page=${page}&extend[]=identifiers&project_token=${encodeURIComponent(token)}`
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      out.push(...(await res.json()))
+      pages = Number(res.headers.get('pagination-total-pages')) || 1
+    }
+  } catch (e) {
+    console.warn(`TaxonWorks: could not read the HAO project (${e.message}); using the old HAO citations only`)
+    return null
+  }
+  return out
+}

@@ -6,7 +6,14 @@
       class="ref"
     >
       <summary>{{ r.short }}</summary>
-      <p>{{ r.full }}</p>
+      <p>
+        <span v-html="r.html" />
+        <RouterLink
+          v-if="r.page"
+          class="more"
+          :to="r.page"
+        >Reference page →</RouterLink>
+      </p>
     </details>
   </template>
   <span
@@ -16,16 +23,17 @@
 </template>
 
 <script setup>
-// References of a synonym or definition: old HAO bibliography numbers, plus citations written into the ontology
+// References of a synonym or definition: the HAO reference numbers (shown with the TaxonWorks citation once it is
+// linked), plus citations written into the ontology as text
 import { computed } from 'vue'
-import { hao, shortRef } from '../lib/hao.js'
+import { citeHtml, ref, refPath, refShort, shortRef } from '../lib/hao.js'
 
 const props = defineProps({
   refs: { type: Array, default: () => [] },
   cites: { type: Array, default: () => [] }
 })
 const items = computed(() => [
-  ...props.refs.filter((r) => hao.value.refs[r]).map((r) => ({ key: r, short: shortRef(hao.value.refs[r]), full: hao.value.refs[r] })),
-  ...props.cites.map((c, i) => ({ key: 'c' + i, short: shortRef(c.split('\n')[0]), full: c }))
+  ...props.refs.filter((k) => ref(k)).map((k) => ({ key: k, short: refShort(k), html: citeHtml(ref(k)), page: refPath(k) })),
+  ...props.cites.map((c, i) => ({ key: 'c' + i, short: shortRef(c.split('\n')[0]), html: citeHtml({ t: c }) }))
 ])
 </script>

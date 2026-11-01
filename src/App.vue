@@ -4,6 +4,7 @@
       <RouterLink class="brand" to="/" aria-label="HAO Explorer home">
         <b>HAO Explorer</b><span>Hymenoptera Anatomy Ontology</span>
       </RouterLink>
+      <nav class="topnav"><RouterLink to="/references">References</RouterLink></nav>
       <SearchBox v-if="hao" />
     </div>
   </header>
@@ -17,7 +18,7 @@
   <footer>
     <div class="wrap">
       Built from the HAO release {{ hao?.version || '…' }}. Terms, definitions, synonyms and relations come straight from the
-      ontology; references are resolved from the HAO bibliography.
+      ontology; references come from the HAO project in TaxonWorks and the original HAO bibliography.
     </div>
   </footer>
 </template>

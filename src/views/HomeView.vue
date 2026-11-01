@@ -13,7 +13,7 @@
       <div class="stats">
         <div class="stat"><b>{{ nf(counts.terms) }}</b><span>anatomical terms</span></div>
         <div class="stat"><b>{{ nf(counts.synonyms) }}</b><span>synonyms</span></div>
-        <div class="stat"><b>{{ nf(counts.refs) }}</b><span>references</span></div>
+        <RouterLink class="stat" to="/references"><b>{{ nf(counts.refs) }}</b><span>references</span></RouterLink>
       </div>
       <p class="pilot">
         Search a term or one of its old names above, or click a part of the wasp. Photos are linked to seven terms so
@@ -45,7 +45,7 @@ const counts = computed(() => {
   return {
     terms: current.length,
     synonyms: current.reduce((n, t) => n + (t.s?.length || 0), 0),
-    refs: Object.keys(hao.value.refs).length
+    refs: Object.keys(hao.value.refs).filter((k) => !k.startsWith('tw')).length
   }
 })
 onMounted(() => (document.title = 'HAO Explorer'))

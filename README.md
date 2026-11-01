@@ -23,12 +23,26 @@ in the browser as you save.
 | What | Source |
 |---|---|
 | Terms, definitions, synonyms, relations | The HAO release `hao.obo`, read by `scripts/build-data.mjs` |
-| Full citations of the references | `data/hymao-refs.json` (the old HAO bibliography, api.hymao.org); later the TaxonWorks HAO project |
+| References | The HAO project in TaxonWorks (sfg.taxonworks.org), read through its API; `data/hymao-refs.json` (the old HAO bibliography) for those not linked yet |
 | Images | `src/lib/figures.js` (labelled figures, each part linked to its term); later TaxonWorks images |
 
 The build looks for `hao.obo` in the places listed in `explorer.config.json` (`../hao.obo` when this folder
 sits inside the hao2 repository, `../target/hao2/hao.obo` in the Ontology working folder), and downloads it
 from `ontologyUrl` if it finds none. The result is `public/data/hao.json`, which is generated and not committed.
+
+## References from TaxonWorks
+
+The ontology cites references by their old HAO address, e.g. `http://api.hymao.org/api/ref/68598`. To link one to
+TaxonWorks, add the source to the HAO project and give it that address as a **Global → URI** identifier. The
+explorer then shows the TaxonWorks citation, links, and a reference page. The **References** page shows how many are
+linked so far, and which are not.
+
+TaxonWorks is read only when the HAO project token is given. It is never written in a file:
+
+- on GitHub, it is the repository secret `TW_PROJECT_TOKEN` (Settings → Secrets and variables → Actions);
+- on your computer, type it before the command, for that run only: `TW_PROJECT_TOKEN=xxxx npm run dev`.
+
+Without it, the site still builds, with the old citations.
 
 ## How the project is organised
 
@@ -38,6 +52,7 @@ from `ontologyUrl` if it finds none. The result is `public/data/hao.json`, which
 | `src/lib/hao.js` | Loads the data; search, short reference labels, links, breadcrumb |
 | `src/lib/figures.js` | Labelled specimen figures and the start-page region shortcuts |
 | `src/views/HomeView.vue` | Start page: clickable specimen, counts, body regions |
+| `src/views/ReferencesView.vue`, `RefView.vue` | All references (with how many are linked to TaxonWorks), and one reference with the terms that cite it |
 | `src/views/TermView.vue` | A term: definition, synonyms and their literature, relations, network, image, identifiers, citation |
 | `src/components/` | Search box, specimen figure, reference list, term chips, network of connections |
 | `src/style.css` | Colours, type and layout (light and dark themes) |
@@ -46,7 +61,7 @@ Links to a term look like `#/term/HAO_0000575`, so they can be shared and work o
 
 ## Planned
 
-- References and images from the TaxonWorks HAO project, so new ones appear without rebuilding the site.
+- Images from the TaxonWorks HAO project, tagged with the HAO term they show.
 
 ## Add a labelled figure
 

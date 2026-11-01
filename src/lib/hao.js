@@ -1,9 +1,10 @@
 // The ontology data (built by scripts/build-data.mjs) and helpers to read it.
 import { shallowRef } from 'vue'
 
-export const hao = shallowRef(null) // { version, terms, refs, relations }
+export const hao = shallowRef(null) // { version, terms, refs, relations, taxonworks }
 let incoming = {}
 let searchIndex = []
+let citers = {} // reference key -> [{ id, what }] (what: 'definition' or the synonym)
 
 export async function loadHao() {
   const res = await fetch(`${import.meta.env.BASE_URL}data/hao.json`)
@@ -11,8 +12,11 @@ export async function loadHao() {
   const data = await res.json()
   incoming = {}
   searchIndex = []
+  citers = {}
   for (const [id, t] of Object.entries(data.terms)) {
     for (const [r, target] of t.r || []) (incoming[target] ||= []).push([r, id])
+    for (const r of t.dr || []) (citers[r] ||= []).push({ id, what: 'definition' })
+    for (const [text, , refs] of t.s || []) for (const r of refs) (citers[r] ||= []).push({ id, what: text })
     if (t.o) continue
     searchIndex.push([id, t.n.toLowerCase(), t.n, null])
     for (const s of t.s || []) searchIndex.push([id, s[0].toLowerCase(), t.n, s[0]])
@@ -61,6 +65,21 @@ export function shortRef(full) {
   const last = (x) => x.replace(/\b[A-Z]\.\s*/g, '').trim().split(/\s+/).pop()
   const who = others.length > 1 ? `${first} et al.` : others.length === 1 ? `${first} & ${last(others[0])}` : first
   return `${who} ${m[2]}`
+}
+
+// References: key is the old HAO number ("67810"), or "tw253232" for a TaxonWorks source not cited in the ontology yet
+export const ref = (key) => hao.value?.refs[key]
+export const refPath = (key) => `/ref/${key}`
+export const refShort = (key) => (ref(key) ? shortRef(ref(key).t) : key)
+export const citedBy = (key) => citers[key] || []
+export const hymaoUri = (n) => `http://api.hymao.org/api/ref/${n}`
+export const twSourceUrl = (id) => `${hao.value?.taxonworks?.app || 'https://sfg.taxonworks.org'}/sources/${id}`
+
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+// the citation as safe HTML: TaxonWorks italics kept, web addresses made into links
+export function citeHtml(r) {
+  const html = r.h ?? esc(r.t)
+  return html.replace(/https?:\/\/[^\s<]+[^\s<.,;)]/g, (u) => `<a href="${u.replace(/"/g, '%22')}" target="_blank" rel="noopener">${u}</a>`)
 }
 
 // Walk up "part of" (or "is a" when there is none) for the breadcrumb
