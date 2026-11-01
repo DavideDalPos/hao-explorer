@@ -18,6 +18,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readReleases } from './releases.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const config = JSON.parse(readFileSync(resolve(root, 'explorer.config.json'), 'utf8'))
@@ -207,7 +208,9 @@ if (tw) {
 
 mkdirSync(resolve(root, 'public/data'), { recursive: true })
 const taxonworks = tw ? { app: config.taxonworks.app, api: config.taxonworks.api, sources: tw.length } : null
-writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, terms, refs, relations, taxonworks }))
+const releases = await readReleases(config, root)
+const release = releases.find((r) => r.version === version)?.name || ''
+writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, release, releases, terms, refs, relations, taxonworks }))
 const current = Object.values(terms).filter((t) => !t.o)
 console.log(`HAO ${version}: ${current.length} current terms, ${current.reduce((n, t) => n + (t.s?.length || 0), 0)} synonyms, ${Object.keys(refs).length} references → public/data/hao.json`)
 

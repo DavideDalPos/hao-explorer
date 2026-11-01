@@ -5,6 +5,7 @@ import HomeView from './views/HomeView.vue'
 import TermView from './views/TermView.vue'
 import RefView from './views/RefView.vue'
 import ReferencesView from './views/ReferencesView.vue'
+import ReleasesView from './views/ReleasesView.vue'
 import './style.css'
 
 const router = createRouter({
@@ -14,6 +15,7 @@ const router = createRouter({
     { path: '/', component: HomeView },
     { path: '/term/:id', component: TermView, props: true },
     { path: '/references', component: ReferencesView },
+    { path: '/releases', component: ReleasesView },
     { path: '/ref/:id', component: RefView, props: true },
     { path: '/:pathMatch(.*)*', redirect: '/' }
   ],

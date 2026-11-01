@@ -45,6 +45,14 @@ public, read-only token, the same kind TaxonPages keeps in its config. Nothing e
 To replace the old addresses in the ontology with TaxonWorks addresses, follow
 [UPDATING-REFERENCES.md](UPDATING-REFERENCES.md) (`npm run references`, then `npm run references:update`).
 
+## How-to guides
+
+| Guide | When |
+|---|---|
+| [MAKING-A-RELEASE.md](MAKING-A-RELEASE.md) | Releasing a new version of HAO (ODK), naming it (HAO 2.x.y), and seeing it on the site |
+| [ADDING-REFERENCES.md](ADDING-REFERENCES.md) | Attaching a new reference to a term or a synonym (TaxonWorks + Protégé) |
+| [UPDATING-REFERENCES.md](UPDATING-REFERENCES.md) | Moving the old HAO references to TaxonWorks, in batches |
+
 ## How the project is organised
 
 | Path | What it does |

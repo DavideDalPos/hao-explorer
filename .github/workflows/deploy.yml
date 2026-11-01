@@ -32,7 +32,7 @@ jobs:
       # no local hao.obo here, so build-data downloads the latest release from hao2
       - run: npm run build
         env:
-          TW_PROJECT_TOKEN: ${{ secrets.TW_PROJECT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

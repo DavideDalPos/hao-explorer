@@ -11,6 +11,7 @@
       >
         <RouterLink to="/">Explore</RouterLink>
         <RouterLink to="/references">References</RouterLink>
+        <RouterLink to="/releases">Releases</RouterLink>
       </nav>
       <button
         class="theme-btn"
@@ -33,7 +34,7 @@
 
   <footer>
     <div class="wrap">
-      Built from the HAO release {{ hao?.version || '…' }}. Terms, definitions, synonyms and relations come straight from the
+      <RouterLink to="/releases">{{ hao?.release ? `${hao.release} · ` : '' }}release {{ hao?.version || '…' }}</RouterLink>. Terms, definitions, synonyms and relations come straight from the
       ontology; references come from the HAO project in TaxonWorks and the original HAO bibliography.
     </div>
   </footer>

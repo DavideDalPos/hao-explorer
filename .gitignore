@@ -5,3 +5,4 @@ public/data/
 # local copy of the ontology for testing; the real one lives in the hao2 repository
 ontology/
 hymao-to-taxonworks-report.csv
+.cache/

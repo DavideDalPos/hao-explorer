@@ -49,6 +49,11 @@ Then on GitHub: open the pull request for `references-update` and merge it. Chec
 **base repository: DavideDalPos/hao2**, base: main (GitHub suggests insect-morphology/hao2 by default, because
 hao2 is a fork of it).
 
+## 4b. Publish the release on GitHub
+
+hao2 on GitHub → **Releases** → **Create a new release** (tag `v` + date, title `HAO 2.1.1 (date)`, one line of
+notes). Details and version numbers: [MAKING-A-RELEASE.md](MAKING-A-RELEASE.md).
+
 ## 5. Check the site
 
 ```

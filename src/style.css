@@ -145,7 +145,7 @@ footer { border-top: 1px solid var(--rule); padding: 22px 0 40px; font-size: 0.8
 /* references */
 .topnav a { color: var(--muted); font-size: 0.9rem; font-weight: 500; }
 .topnav a:hover { color: var(--accent); text-decoration: none; }
-.topnav a[href="#/references"].router-link-active { color: var(--accent); }
+.topnav a[href="#/references"].router-link-active, .topnav a[href="#/releases"].router-link-active { color: var(--accent); }
 a.stat { color: var(--ink); }
 a.stat:hover { border-color: var(--accent); text-decoration: none; }
 .ref .more { display: inline-block; margin-left: 8px; font-size: 0.82rem; white-space: nowrap; }
@@ -250,3 +250,21 @@ a.stat:hover { border-color: var(--accent); text-decoration: none; }
 .rtl-cite { margin: 4px 0; font-size: 0.9rem; }
 .rtl-cite a { overflow-wrap: anywhere; }
 .rtl-meta { font-size: 0.84rem; margin: 0; }
+
+/* releases */
+.rel-list { list-style: none; padding: 0; margin: 18px 0 40px; position: relative; }
+.rel-list::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--rule); }
+.rel { position: relative; padding-left: 32px; margin-bottom: 16px; }
+.rel-dot { position: absolute; left: 0; top: 22px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 3px solid var(--accent); }
+.rel:not(:first-child) .rel-dot { border-color: var(--muted); }
+.rel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.rel-head h2 { font: 700 1.35rem/1.2 var(--font-display); margin: 0; }
+.rel-notes { margin: 8px 0 4px; white-space: pre-line; }
+.rel-meta { font-size: 0.86rem; margin: 6px 0 0; }
+.rel-changes { display: grid; gap: 6px; margin-top: 12px; }
+.rel-group { border: 1px solid var(--rule); border-radius: 10px; padding: 8px 12px; }
+.rel-group summary { cursor: pointer; font-size: 0.92rem; }
+.rel-group summary b { font-variant-numeric: tabular-nums; margin-right: 4px; }
+.rel-group ul { margin: 8px 0 2px; padding-left: 18px; font-size: 0.9rem; columns: 2 280px; column-gap: 28px; }
+.rel-group li { break-inside: avoid; margin-bottom: 3px; }
+footer a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule); }

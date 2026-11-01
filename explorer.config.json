@@ -1,6 +1,9 @@
 {
-  "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl. References come from the HAO project in TaxonWorks (public project token, like TaxonPages).",
-  "ontology": ["../hao2/hao.obo", "ontology/hao.obo"],
+  "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl. References come from the HAO project in TaxonWorks (public project token, like TaxonPages). Releases: the GitHub releases of hao2; baseline is the release before the first one (only used for comparison).",
+  "ontology": [
+    "../hao2/hao.obo",
+    "ontology/hao.obo"
+  ],
   "ontologyUrl": "https://raw.githubusercontent.com/DavideDalPos/hao2/main/hao.obo",
   "ontologyEdit": "../hao2/src/ontology/hao-edit.owl",
   "taxonworks": {
@@ -8,5 +11,14 @@
     "app": "https://sfg.taxonworks.org",
     "project_token": "PL5kXBa3_d7T0p3YrpItkg"
   },
-  "title": "Hymenoptera Anatomy Ontology"
+  "title": "Hymenoptera Anatomy Ontology",
+  "releases": {
+    "repo": "DavideDalPos/hao2",
+    "baseline": {
+      "ref": "13f1ed3040850389494bb0d72c475ec714fa51c3",
+      "name": "HAO 2.0.0",
+      "date": "2026-02-12",
+      "notes": "First HAO2 release, made with the Ontology Development Kit and placed under the Insect Skeleto-Muscular Ontology (AISM)."
+    }
+  }
 }
