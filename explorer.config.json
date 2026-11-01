@@ -1,8 +1,8 @@
 {
   "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl. References come from the HAO project in TaxonWorks (public project token, like TaxonPages).",
-  "ontology": ["../hao.obo", "../../GitHub/hao2/hao.obo", "../target/hao2/hao.obo", "ontology/hao.obo"],
+  "ontology": ["../hao2/hao.obo", "ontology/hao.obo"],
   "ontologyUrl": "https://raw.githubusercontent.com/DavideDalPos/hao2/main/hao.obo",
-  "ontologyEdit": "../../GitHub/hao2/src/ontology/hao-edit.owl",
+  "ontologyEdit": "../hao2/src/ontology/hao-edit.owl",
   "taxonworks": {
     "api": "https://sfg.taxonworks.org/api/v1",
     "app": "https://sfg.taxonworks.org",

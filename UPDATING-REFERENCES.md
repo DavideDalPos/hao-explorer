@@ -18,39 +18,41 @@ Which ones are left: the **References** page of the site ("Not linked yet"), or 
 ## 2. Update the ontology (PowerShell)
 
 ```
-cd C:\Users\davel\Desktop\Archive\GitHub\hao2
+cd C:\Users\davel\Desktop\Archive\GitHub\HAO\hao2
 git checkout main
 git pull
 git checkout -b references-update
 
-cd C:\Users\davel\Desktop\Archive\Ontology\hao-explorer
+cd C:\Users\davel\Desktop\Archive\GitHub\HAO\hao-explorer
 npm run references            # shows what would change, changes nothing
 npm run references:update     # changes hao-edit.owl
 ```
 
-## 3. Make the release (Git Bash, Docker Desktop running)
+## 3. Make the release (PowerShell, Docker Desktop running)
 
 ```
-cd /c/Users/davel/Desktop/Archive/GitHub/hao2/src/ontology
-sh run.sh make prepare_release
+cd C:\Users\davel\Desktop\Archive\GitHub\HAO\hao2\src\ontology
+.\run.bat make prepare_release
 ```
 
-## 4. Push hao2 (PowerShell or Git Bash)
+## 4. Push hao2 (PowerShell)
 
 ```
-cd C:\Users\davel\Desktop\Archive\GitHub\hao2
+cd C:\Users\davel\Desktop\Archive\GitHub\HAO\hao2
 git status
 git add -A
 git commit -m "References linked to TaxonWorks"
 git push -u origin references-update
 ```
 
-Then on GitHub: open the pull request for `references-update` and merge it.
+Then on GitHub: open the pull request for `references-update` and merge it. Check the pull request page says
+**base repository: DavideDalPos/hao2**, base: main (GitHub suggests insect-morphology/hao2 by default, because
+hao2 is a fork of it).
 
 ## 5. Check the site
 
 ```
-cd C:\Users\davel\Desktop\Archive\Ontology\hao-explorer
+cd C:\Users\davel\Desktop\Archive\GitHub\HAO\hao-explorer
 npm run dev
 ```
 

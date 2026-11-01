@@ -28,9 +28,9 @@ in the browser as you save.
 | References | The HAO project in TaxonWorks (sfg.taxonworks.org), read through its API; `data/hymao-refs.json` (the old HAO bibliography) for those not linked yet |
 | Images | `src/lib/figures.js` (labelled figures, each part linked to its term); later TaxonWorks images |
 
-The build looks for `hao.obo` in the places listed in `explorer.config.json` (`../hao.obo` when this folder
-sits inside the hao2 repository, `../target/hao2/hao.obo` in the Ontology working folder), and downloads it
-from `ontologyUrl` if it finds none. The result is `public/data/hao.json`, which is generated and not committed.
+The build reads `hao.obo` from the hao2 repository next to this folder (`../hao2/hao.obo`, as set in
+`explorer.config.json`), and downloads it from `ontologyUrl` if it is not there (as on GitHub). The result is
+`public/data/hao.json`, which is generated and not committed.
 
 ## References from TaxonWorks
 
