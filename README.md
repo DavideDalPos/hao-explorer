@@ -47,7 +47,6 @@ Links to a term look like `#/term/HAO_0000575`, so they can be shared and work o
 ## Planned
 
 - References and images from the TaxonWorks HAO project, so new ones appear without rebuilding the site.
-- Automatic rebuild and publishing on GitHub Pages whenever a new ontology release is made.
 
 ## Add a labelled figure
 
@@ -61,4 +60,6 @@ image's own pixel grid. The term pages pick it up automatically.
 npm run build    # the finished site is in dist/
 ```
 
-`dist/` can be served from GitHub Pages (a deploy workflow can be added later) or any static host.
+Online, the site is built and published automatically on GitHub Pages by `.github/workflows/deploy.yml`:
+on every push to `main`, every Monday (to pick up a new hao2 release), and on demand from the Actions tab.
+The live site is at <https://davidedalpos.github.io/hao-explorer/>.
