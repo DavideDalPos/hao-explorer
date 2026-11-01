@@ -60,8 +60,9 @@ const unquote = (s) => {
 function sources(qs) {
   const refs = [], cites = []
   for (const [k, v] of qs) {
-    const m = v.match(/api\/ref\/(\d+)/)
-    if (/hasDbXref$/.test(k) && m) refs.push(m[1])
+    // old HAO bibliography (…/api/ref/68598) or a TaxonWorks source (…/api/v1/sources/44001)
+    const m = v.match(/hymao\.org\/api\/ref\/(\d+)/) || v.match(/\/api\/v1\/sources\/(\d+)/)
+    if (/hasDbXref$/.test(k) && m) refs.push(m[0].includes('sources') ? 'tw' + m[1] : m[1])
     else if (k === 'AISM:0000171') cites.push(v.trim())
   }
   return { refs, cites }
@@ -165,36 +166,47 @@ for (const [id, d] of Object.entries(raw)) {
   if (d.replacedBy) t.rb = d.replacedBy
   terms[id] = t
 }
-// references, keyed by the old HAO number ("67810"), or "tw253232" for TaxonWorks sources the ontology
-// does not cite yet. Each: { t: plain citation, h: citation as HTML (TaxonWorks), tw, u: link, doi, hy: old number }
+// references, keyed by the old HAO number ("67810") or "tw44001" for a TaxonWorks source (cited in the ontology
+// by its TaxonWorks address, or in the HAO project but not cited yet).
+// Each: { t: plain citation, h: citation as HTML (TaxonWorks), tw, u: link, doi, hy: old number }
 const refs = {}
 for (const r of usedRefs) if (allRefs[r] && !/404/.test(allRefs[r])) refs[r] = { t: allRefs[r], hy: r }
-const citedCount = Object.keys(refs).length
 
 const tw = await readTaxonWorks()
 if (tw) {
-  let linked = 0
-  for (const s of tw) {
-    const html = s.cached.replace(/<(?!\/?i>)[^>]*>/g, '') // keep italics only
+  const add = (s) => {
+    const html = s.cached
+      .replace(/<(?!\/?i>)[^>]*>/g, '') // keep italics only
+      // TaxonWorks writes the URI identifier into the citation ("Available at http://api.hymao.org/api/ref/68598");
+      // that old address is shown separately on the reference page, so it is left out of the citation
+      .replace(/\s*Available at https?:\/\/api\.hymao\.org\/api\/ref\/\d+\.?/g, '')
+      .trim()
     const entry = { t: html.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&'), h: html, tw: s.id }
     if (s.url) entry.u = s.url
     if (s.doi) entry.doi = s.doi
-    const old = s.identifiers
+    const old = (s.identifiers || [])
       .filter((i) => i.type === 'Identifier::Global::Uri')
       .map((i) => (i.value.match(/hymao\.org\/api\/ref\/(\d+)/) || [])[1])
       .filter(Boolean)
-    const cited = old.filter((n) => refs[n])
-    if (!cited.length) refs['tw' + s.id] = old.length ? { ...entry, hy: old[0] } : entry
-    for (const n of cited) {
-      refs[n] = { ...entry, hy: n }
-      linked++
-    }
+    const cited = old.filter((n) => usedRefs.has(n))
+    if (!cited.length || usedRefs.has('tw' + s.id)) refs['tw' + s.id] = old.length ? { ...entry, hy: old[0] } : entry
+    for (const n of cited) refs[n] = { ...entry, hy: n }
   }
-  console.log(`TaxonWorks: ${tw.length} sources in the HAO project, ${linked} of the ${citedCount} references cited in the ontology are linked`)
+  tw.forEach(add)
+  // sources cited by TaxonWorks address but not (or no longer) in the HAO project
+  for (const k of usedRefs) {
+    if (!k.startsWith('tw') || refs[k]) continue
+    const s = await readTaxonWorksSource(k.slice(2))
+    if (s) add(s)
+  }
+  const cited = [...usedRefs].filter((k) => refs[k])
+  const linked = cited.filter((k) => refs[k].tw)
+  const direct = cited.filter((k) => k.startsWith('tw'))
+  console.log(`TaxonWorks: ${tw.length} sources in the HAO project; ${linked.length} of the ${cited.length} references cited in the ontology are in TaxonWorks (${direct.length} cited by their TaxonWorks address)`)
 }
 
 mkdirSync(resolve(root, 'public/data'), { recursive: true })
-const taxonworks = tw ? { app: config.taxonworks.app, sources: tw.length } : null
+const taxonworks = tw ? { app: config.taxonworks.app, api: config.taxonworks.api, sources: tw.length } : null
 writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, terms, refs, relations, taxonworks }))
 const current = Object.values(terms).filter((t) => !t.o)
 console.log(`HAO ${version}: ${current.length} current terms, ${current.reduce((n, t) => n + (t.s?.length || 0), 0)} synonyms, ${Object.keys(refs).length} references → public/data/hao.json`)
@@ -220,4 +232,15 @@ async function readTaxonWorks() {
     return null
   }
   return out
+}
+
+// One source by its TaxonWorks id (sources are shared by all projects); null if it cannot be read
+async function readTaxonWorksSource(id) {
+  const token = process.env.TW_PROJECT_TOKEN || config.taxonworks.project_token
+  try {
+    const res = await fetch(`${config.taxonworks.api}/sources/${id}?extend[]=identifiers&project_token=${encodeURIComponent(token)}`)
+    return res.ok ? await res.json() : null
+  } catch {
+    return null
+  }
 }

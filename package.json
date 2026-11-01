@@ -8,7 +8,9 @@
     "data": "node scripts/build-data.mjs",
     "dev": "node scripts/build-data.mjs && vite",
     "build": "node scripts/build-data.mjs && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "references": "node scripts/hymao-to-taxonworks.mjs",
+    "references:update": "node scripts/hymao-to-taxonworks.mjs --write"
   },
   "dependencies": {
     "cytoscape": "3.28.1",

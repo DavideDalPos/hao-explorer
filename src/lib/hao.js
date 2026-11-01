@@ -73,6 +73,7 @@ export const refPath = (key) => `/ref/${key}`
 export const refShort = (key) => (ref(key) ? shortRef(ref(key).t) : key)
 export const citedBy = (key) => citers[key] || []
 export const hymaoUri = (n) => `http://api.hymao.org/api/ref/${n}`
+export const twApiUrl = (id) => `${hao.value?.taxonworks?.api || 'https://sfg.taxonworks.org/api/v1'}/sources/${id}`
 export const twSourceUrl = (id) => `${hao.value?.taxonworks?.app || 'https://sfg.taxonworks.org'}/sources/${id}`
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

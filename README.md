@@ -42,6 +42,9 @@ linked so far, and which are not.
 TaxonWorks is read with the HAO project token in `explorer.config.json` (`taxonworks.project_token`). It is a
 public, read-only token, the same kind TaxonPages keeps in its config. Nothing else to set up: `npm run dev`.
 
+To replace the old addresses in the ontology with TaxonWorks addresses, follow
+[UPDATING-REFERENCES.md](UPDATING-REFERENCES.md) (`npm run references`, then `npm run references:update`).
+
 ## How the project is organised
 
 | Path | What it does |

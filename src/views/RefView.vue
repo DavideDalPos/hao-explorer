@@ -70,6 +70,13 @@
               target="_blank"
               rel="noopener"
             >TaxonWorks source {{ r.tw }} (editors) ↗</a>
+            <a
+              v-if="r.tw"
+              :href="twApiUrl(r.tw)"
+              target="_blank"
+              rel="noopener"
+              class="mono"
+            >{{ twApiUrl(r.tw) }}</a>
             <span
               v-if="r.hy"
               class="muted mono"
@@ -96,7 +103,7 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { citedBy, citeHtml, hao, hymaoUri, ref, refShort, termName, termPath, twSourceUrl } from '../lib/hao.js'
+import { citedBy, citeHtml, hao, hymaoUri, ref, refShort, termName, termPath, twApiUrl, twSourceUrl } from '../lib/hao.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const r = computed(() => ref(props.id))
