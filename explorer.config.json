@@ -1,0 +1,7 @@
+{
+  "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl.",
+  "ontology": ["../hao.obo", "../target/hao2/hao.obo", "ontology/hao.obo"],
+  "ontologyUrl": "https://raw.githubusercontent.com/DavideDalPos/hao2/main/hao.obo",
+  "title": "HAO Explorer",
+  "subtitle": "Hymenoptera Anatomy Ontology"
+}

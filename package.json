@@ -1,0 +1,22 @@
+{
+  "name": "hao-explorer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A friendly interface to the Hymenoptera Anatomy Ontology (HAO): terms, synonyms with their literature, images and connections.",
+  "type": "module",
+  "scripts": {
+    "data": "node scripts/build-data.mjs",
+    "dev": "node scripts/build-data.mjs && vite",
+    "build": "node scripts/build-data.mjs && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cytoscape": "3.28.1",
+    "vue": "3.5.13",
+    "vue-router": "4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.1",
+    "vite": "6.0.7"
+  }
+}
