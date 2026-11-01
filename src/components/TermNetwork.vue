@@ -46,6 +46,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import cytoscape from 'cytoscape'
 import { incomingOf, relationName, term, termName, termPath } from '../lib/hao.js'
+import { theme } from '../lib/theme.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const router = useRouter()
@@ -133,6 +134,6 @@ function draw() {
 }
 
 onMounted(draw)
-watch([() => props.id, depth, shown], draw)
+watch([() => props.id, depth, shown, theme], draw)
 onBeforeUnmount(() => cy?.destroy())
 </script>

@@ -204,7 +204,7 @@ const groups = computed(() => {
   ].filter(Boolean)
 })
 
-watchEffect(() => (document.title = t.value ? `${t.value.n} — HAO Explorer` : 'HAO Explorer'))
+watchEffect(() => (document.title = t.value ? `${t.value.n} — Hymenoptera Anatomy Ontology` : 'Hymenoptera Anatomy Ontology'))
 
 function copy(text, e) {
   const btn = e.currentTarget

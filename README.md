@@ -1,4 +1,6 @@
-# HAO Explorer
+# Hymenoptera Anatomy Ontology — website
+
+The code of the **Hymenoptera Anatomy Ontology** website (this repository: `hao-explorer`).
 
 A friendly interface to the **Hymenoptera Anatomy Ontology (HAO)** for taxonomists, students and the public:
 search a term or any of its old names, read its definition, see every synonym with the works that used it,
@@ -37,12 +39,8 @@ TaxonWorks, add the source to the HAO project and give it that address as a **Gl
 explorer then shows the TaxonWorks citation, links, and a reference page. The **References** page shows how many are
 linked so far, and which are not.
 
-TaxonWorks is read only when the HAO project token is given. It is never written in a file:
-
-- on GitHub, it is the repository secret `TW_PROJECT_TOKEN` (Settings → Secrets and variables → Actions);
-- on your computer, type it before the command, for that run only: `TW_PROJECT_TOKEN=xxxx npm run dev`.
-
-Without it, the site still builds, with the old citations.
+TaxonWorks is read with the HAO project token in `explorer.config.json` (`taxonworks.project_token`). It is a
+public, read-only token, the same kind TaxonPages keeps in its config. Nothing else to set up: `npm run dev`.
 
 ## How the project is organised
 

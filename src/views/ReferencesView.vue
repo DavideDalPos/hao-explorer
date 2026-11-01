@@ -11,6 +11,13 @@
     TaxonWorks; those not linked yet still show the old HAO bibliography.
   </p>
 
+  <p
+    v-if="!hao.taxonworks"
+    class="pilot"
+  >
+    This copy of the site could not read TaxonWorks, so every reference shows its old HAO citation. Check the
+    internet connection and the project token in explorer.config.json, then restart.
+  </p>
   <div class="stats">
     <div class="stat"><b>{{ nf(counts.cited) }}</b><span>cited in the ontology</span></div>
     <div class="stat"><b>{{ nf(counts.linked) }}</b><span>linked to TaxonWorks</span></div>
@@ -25,6 +32,10 @@
     :aria-label="`${counts.linked} of ${counts.cited} references linked to TaxonWorks`"
   ><span :style="{ width: (100 * counts.linked) / Math.max(counts.cited, 1) + '%' }" /></div>
 
+  <h2 class="sec">Two centuries of names</h2>
+  <ReferenceTimeline />
+
+  <h2 class="sec">All references</h2>
   <div class="filters">
     <input
       v-model="q"
@@ -82,6 +93,7 @@
 <script setup>
 import { computed, onMounted, ref as vref } from 'vue'
 import { citedBy, hao, refPath } from '../lib/hao.js'
+import ReferenceTimeline from '../components/ReferenceTimeline.vue'
 
 const VIEWS = [['all', 'All'], ['linked', 'In TaxonWorks'], ['todo', 'Not linked yet']]
 const q = vref('')
@@ -108,5 +120,5 @@ const shown = computed(() => {
     (view.value === 'all' || (view.value === 'linked' ? r.tw : !r.tw)) && (!s || r.low.includes(s))
   )
 })
-onMounted(() => (document.title = 'References — HAO Explorer'))
+onMounted(() => (document.title = 'References — Hymenoptera Anatomy Ontology'))
 </script>

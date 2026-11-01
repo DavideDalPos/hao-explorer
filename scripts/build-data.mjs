@@ -13,9 +13,8 @@
 // identifier is shown instead of the old citation, and sources not cited in
 // the ontology yet are listed too.
 //
-// TaxonWorks is read only when the project token is given in the environment
-// (never in a file):  TW_PROJECT_TOKEN=… npm run dev
-// On GitHub the token comes from the repository secret TW_PROJECT_TOKEN.
+// TaxonWorks is read with the HAO project token in explorer.config.json (a public,
+// read-only token, as in TaxonPages).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -202,9 +201,9 @@ console.log(`HAO ${version}: ${current.length} current terms, ${current.reduce((
 
 // All sources of the HAO project, with their identifiers; null when there is no token or TaxonWorks does not answer
 async function readTaxonWorks() {
-  const token = process.env.TW_PROJECT_TOKEN
+  const token = process.env.TW_PROJECT_TOKEN || config.taxonworks.project_token
   if (!token) {
-    console.log('TaxonWorks: no TW_PROJECT_TOKEN given, using the old HAO citations only')
+    console.warn('\n  ⚠  TaxonWorks NOT read: no project_token in explorer.config.json. References show the old HAO citations.\n')
     return null
   }
   const out = []

@@ -1,7 +1,7 @@
 <template>
   <div
     ref="box"
-    class="search"
+    :class="['search', { big }]"
     role="search"
   >
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -12,7 +12,7 @@
       id="q"
       v-model="query"
       type="search"
-      placeholder="Search 3,000+ terms and synonyms, e.g. scutum, propodeum, Hinterleib"
+      :placeholder="big ? 'Search a part, or any of its old names: scutum, propodeum, Hinterleib…' : 'Search terms and synonyms'"
       autocomplete="off"
       aria-label="Search terms and synonyms"
       aria-controls="results"
@@ -57,6 +57,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { search, termPath } from '../lib/hao.js'
 
+const props = defineProps({ big: { type: Boolean, default: false } })
 const router = useRouter()
 const query = ref('')
 const open = ref(false)

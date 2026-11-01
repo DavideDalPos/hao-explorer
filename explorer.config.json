@@ -1,11 +1,11 @@
 {
-  "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl. References come from the HAO project in TaxonWorks (the token is given as TW_PROJECT_TOKEN, never written here).",
+  "_comment": "Where the build looks for the ontology release, in this order. The first file found is used; if none is found, the release is downloaded from ontologyUrl. References come from the HAO project in TaxonWorks (public project token, like TaxonPages).",
   "ontology": ["../hao.obo", "../target/hao2/hao.obo", "ontology/hao.obo"],
   "ontologyUrl": "https://raw.githubusercontent.com/DavideDalPos/hao2/main/hao.obo",
   "taxonworks": {
     "api": "https://sfg.taxonworks.org/api/v1",
-    "app": "https://sfg.taxonworks.org"
+    "app": "https://sfg.taxonworks.org",
+    "project_token": "PL5kXBa3_d7T0p3YrpItkg"
   },
-  "title": "HAO Explorer",
-  "subtitle": "Hymenoptera Anatomy Ontology"
+  "title": "Hymenoptera Anatomy Ontology"
 }

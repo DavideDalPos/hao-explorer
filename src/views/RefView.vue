@@ -77,7 +77,7 @@
           </div>
         </div>
         <div
-          v-if="!r.tw && r.hy"
+          v-if="!r.tw && r.hy && hao.taxonworks"
           class="card"
         >
           <h3>Not yet in TaxonWorks</h3>
@@ -96,12 +96,12 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { citedBy, citeHtml, hymaoUri, ref, refShort, termName, termPath, twSourceUrl } from '../lib/hao.js'
+import { citedBy, citeHtml, hao, hymaoUri, ref, refShort, termName, termPath, twSourceUrl } from '../lib/hao.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const r = computed(() => ref(props.id))
 const uses = computed(() =>
   citedBy(props.id).slice().sort((a, b) => termName(a.id).localeCompare(termName(b.id)) || a.what.localeCompare(b.what))
 )
-watchEffect(() => (document.title = r.value ? `${refShort(props.id)} — HAO Explorer` : 'HAO Explorer'))
+watchEffect(() => (document.title = r.value ? `${refShort(props.id)} — Hymenoptera Anatomy Ontology` : 'Hymenoptera Anatomy Ontology'))
 </script>
