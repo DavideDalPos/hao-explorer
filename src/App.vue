@@ -12,6 +12,7 @@
         <RouterLink to="/">Explore</RouterLink>
         <RouterLink to="/references">References</RouterLink>
         <RouterLink to="/releases">Releases</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
       </nav>
       <button
         class="theme-btn"
@@ -32,10 +33,55 @@
     <RouterView v-else />
   </main>
 
-  <footer>
+  <footer class="foot">
     <div class="wrap">
-      <RouterLink to="/releases">{{ hao?.release ? `${hao.release} · ` : '' }}release {{ hao?.version || '…' }}</RouterLink>. Terms, definitions, synonyms and relations come straight from the
-      ontology; references come from the HAO project in TaxonWorks and the original HAO bibliography.
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <RouterLink class="brand" to="/">
+            <span class="brand-mark">HAO</span><b>Hymenoptera Anatomy Ontology</b>
+          </RouterLink>
+          <p>
+            The shared vocabulary of wasp, bee, ant and sawfly anatomy: definitions, relations and the names each part
+            has carried in the literature.
+          </p>
+          <RouterLink
+            class="foot-version"
+            to="/releases"
+          >{{ hao?.release || 'Release' }} · {{ hao?.version || '…' }}</RouterLink>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><RouterLink to="/">Map of the body</RouterLink></li>
+            <li><RouterLink to="/references">References</RouterLink></li>
+            <li><RouterLink to="/compare">Compare groups</RouterLink></li>
+            <li><RouterLink to="/releases">Releases</RouterLink></li>
+            <li><RouterLink to="/statistics">Statistics</RouterLink></li>
+            <li><RouterLink to="/about">About HAO</RouterLink></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ontology</h4>
+          <ul>
+            <li><a href="http://purl.obolibrary.org/obo/hao.owl">Download hao.owl</a></li>
+            <li><a href="http://purl.obolibrary.org/obo/hao.obo">Download hao.obo</a></li>
+            <li><a href="https://www.ebi.ac.uk/ols4/ontologies/hao">Ontology Lookup Service ↗</a></li>
+            <li><a href="https://github.com/DavideDalPos/hao2">Source on GitHub ↗</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contribute</h4>
+          <ul>
+            <li><a href="https://github.com/DavideDalPos/hao2/issues/new/choose">Request a term or report a problem ↗</a></li>
+            <li><a href="https://github.com/DavideDalPos/hao2/blob/main/CONTRIBUTING.md">How to contribute ↗</a></li>
+            <li><a href="https://sfg.taxonworks.org">References in TaxonWorks ↗</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>Content licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Terms, definitions and relations from the ontology; references from the HAO project in TaxonWorks.</span>
+        <span>Cite: Yoder et al. (2010) A gross anatomy ontology for Hymenoptera. <i>PLoS ONE</i> 5(12): e15991.</span>
+      </div>
     </div>
   </footer>
 </template>

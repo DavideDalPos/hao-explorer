@@ -59,7 +59,9 @@ export async function readReleases(config, root) {
       notes: step.notes,
       url: step.url,
       files: { obo: raw(repo, step.tag, 'hao.obo'), owl: raw(repo, step.tag, 'hao.owl') },
-      terms: [...cur.terms.values()].filter((t) => !t.o).length
+      terms: [...cur.terms.values()].filter((t) => !t.o).length,
+      synonyms: [...cur.terms.values()].filter((t) => !t.o).reduce((n, t) => n + t.syn.size, 0),
+      twSources: new Set([...cur.terms.values()].flatMap((t) => [...t.tw.keys()])).size
     }
     if (step.baseline) entry.baseline = true
     if (prev) entry.diff = compare(prev, cur)
@@ -93,6 +95,7 @@ function summarize(text) {
     const def = s.match(/^def: "((?:[^"\\]|\\.)*)"/m)
     if (def) t.d = def[1]
     for (const m of s.matchAll(/^(?:synonym: |property_value: oboInOwl:has\w*Synonym )"((?:[^"\\]|\\.)*)"/gm)) t.syn.add(m[1])
+    t.syn.delete(t.n) // a name repeated as its own synonym is not counted
     for (const m of s.matchAll(/\/api\/v1\/sources\/(\d+)/g)) t.tw.set(m[1], (t.tw.get(m[1]) || 0) + 1)
     terms.set(id, t)
   }

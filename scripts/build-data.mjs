@@ -72,6 +72,11 @@ function sources(qs) {
 const text = await readOntology()
 const stanzas = text.split(/\r?\n\r?\n/)
 const version = (text.match(/^data-version: (.*)$/m) || [])[1]?.replace('releases/', '') || ''
+// editors, from the ontology header: dcterms:contributor "Davide Dal Pos (DDP) https://orcid.org/…"
+const contributors = [...stanzas[0].matchAll(/^property_value: dcterms:contributor "([^"]*)"/gm)].map((m) => {
+  const orcid = (m[1].match(/https?:\/\/orcid\.org\/[\dX-]+/) || [])[0] || ''
+  return { name: m[1].replace(orcid, '').replace(/\s*\([^)]*\)\s*$/, '').trim(), orcid }
+})
 
 const relations = { parallel_to: 'parallel to', 'OBO_REL:0000004': 'related to' }
 for (const s of stanzas) {
@@ -207,10 +212,25 @@ if (tw) {
 }
 
 mkdirSync(resolve(root, 'public/data'), { recursive: true })
+// groups: the taxa a work deals with, from citations of the source on an OTU or a taxon name in the HAO project
+const groups = {}
+if (tw) {
+  const byTw = {}
+  for (const [k, r] of Object.entries(refs)) if (r.tw) (byTw[r.tw] ||= []).push(k)
+  const links = await readGroupLinks()
+  for (const { source, key, name, rank, pages } of links) {
+    groups[key] = { n: name, ...(rank ? { r: rank } : {}) }
+    for (const k of byTw[source] || []) {
+      const g = (refs[k].g ||= [])
+      if (!g.some((x) => x[0] === key)) g.push(pages ? [key, pages] : [key])
+    }
+  }
+  if (links.length) console.log(`TaxonWorks: ${links.length} links from references to ${Object.keys(groups).length} groups (${Object.values(groups).map((g) => g.n).join(', ')})`)
+}
 const taxonworks = tw ? { app: config.taxonworks.app, api: config.taxonworks.api, sources: tw.length } : null
 const releases = await readReleases(config, root)
 const release = releases.find((r) => r.version === version)?.name || ''
-writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, release, releases, terms, refs, relations, taxonworks }))
+writeFileSync(resolve(root, 'public/data/hao.json'), JSON.stringify({ version, release, releases, contributors, terms, refs, groups, relations, taxonworks }))
 const current = Object.values(terms).filter((t) => !t.o)
 console.log(`HAO ${version}: ${current.length} current terms, ${current.reduce((n, t) => n + (t.s?.length || 0), 0)} synonyms, ${Object.keys(refs).length} references → public/data/hao.json`)
 
@@ -233,6 +253,56 @@ async function readTaxonWorks() {
   } catch (e) {
     console.warn(`TaxonWorks: could not read the HAO project (${e.message}); using the old HAO citations only`)
     return null
+  }
+  return out
+}
+
+// GET from the TaxonWorks API with the project token; null on failure
+async function twGet(path) {
+  const token = process.env.TW_PROJECT_TOKEN || config.taxonworks.project_token
+  try {
+    const res = await fetch(`${config.taxonworks.api}${path}${path.includes('?') ? '&' : '?'}project_token=${encodeURIComponent(token)}`)
+    return res.ok ? { data: await res.json(), pages: Number(res.headers.get('pagination-total-pages')) || 1 } : null
+  } catch {
+    return null
+  }
+}
+
+// Citations of sources on OTUs and taxon names: [{ source, key, name, rank, pages }]
+async function readGroupLinks() {
+  const cites = []
+  for (let page = 1, pages = 1; page <= pages; page++) {
+    const r = await twGet(`/citations?per=500&page=${page}`)
+    if (!r) break
+    pages = r.pages
+    cites.push(...r.data.filter((c) => c.citation_object_type === 'Otu' || c.citation_object_type === 'TaxonName'))
+  }
+  const names = {}
+  const taxonName = async (id) => {
+    if (!(id in names)) {
+      const r = await twGet(`/taxon_names/${id}`)
+      names[id] = r && { name: r.data.cached, rank: (r.data.rank_string || '').split('::').pop().toLowerCase() }
+    }
+    return names[id]
+  }
+  const out = []
+  for (const c of cites) {
+    let key, name, rank
+    if (c.citation_object_type === 'TaxonName') {
+      const t = await taxonName(c.citation_object_id)
+      if (!t) continue
+      key = 'tn' + c.citation_object_id
+      ;({ name, rank } = t)
+    } else {
+      const r = await twGet(`/otus/${c.citation_object_id}`)
+      if (!r) continue
+      const o = r.data
+      const t = o.taxon_name_id ? await taxonName(o.taxon_name_id) : null
+      key = o.taxon_name_id ? 'tn' + o.taxon_name_id : 'otu' + o.id // an OTU with a name counts as that taxon
+      name = o.name || t?.name || (o.object_tag || '').replace(/<[^>]*>/g, '')
+      rank = t?.rank
+    }
+    out.push({ source: c.source_id, key, name, rank, pages: c.pages || '' })
   }
   return out
 }

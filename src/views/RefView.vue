@@ -22,6 +22,22 @@
           v-html="citeHtml(r)"
         />
 
+        <p
+          v-if="groups.length"
+          class="ref-group-line"
+        >
+          About
+          <RouterLink
+            v-for="gr in groups"
+            :key="gr.key"
+            class="chip"
+            :to="groupPath(gr.key)"
+          >{{ gr.n }}<span
+            v-if="gr.pages"
+            class="muted"
+          >{{ ' pp. ' + gr.pages }}</span></RouterLink>
+        </p>
+
         <h2 class="sec">Used in the ontology</h2>
         <div
           class="card"
@@ -103,10 +119,11 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { citedBy, citeHtml, hao, hymaoUri, ref, refShort, termName, termPath, twApiUrl, twSourceUrl } from '../lib/hao.js'
+import { citedBy, citeHtml, group, groupPath, groupsOf, hao, hymaoUri, ref, refShort, termName, termPath, twApiUrl, twSourceUrl } from '../lib/hao.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 const r = computed(() => ref(props.id))
+const groups = computed(() => groupsOf(props.id).filter((x) => group(x[0])).map(([key, pages]) => ({ key, pages, n: group(key).n })))
 const uses = computed(() =>
   citedBy(props.id).slice().sort((a, b) => termName(a.id).localeCompare(termName(b.id)) || a.what.localeCompare(b.what))
 )

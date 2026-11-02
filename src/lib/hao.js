@@ -67,6 +67,28 @@ export function shortRef(full) {
   return `${who} ${m[2]}`
 }
 
+// Groups (taxa) a work deals with, from TaxonWorks: key "tn1658715" -> { n: "Chrysididae", r: "family" }
+export const group = (key) => hao.value?.groups?.[key]
+export const groupPath = (key) => `/group/${key}`
+export const groupsOf = (refKey) => ref(refKey)?.g || [] // [[groupKey, pages?]]
+export const worksOfGroup = (key) =>
+  Object.entries(hao.value?.refs || {}).filter(([, r]) => (r.g || []).some((x) => x[0] === key)).map(([k]) => k)
+
+// The names a group's works use: [{ id: term, what: 'definition' | synonym, ref }]
+export const namesInGroup = (key) =>
+  worksOfGroup(key).flatMap((r) => citedBy(r).map((u) => ({ ...u, ref: r })))
+
+// Download text as a file (glossaries)
+export function download(name, text, type = 'text/csv') {
+  const url = URL.createObjectURL(new Blob(['\ufeff' + text], { type: `${type};charset=utf-8` }))
+  const a = Object.assign(document.createElement('a'), { href: url, download: name })
+  document.body.append(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+export const csv = (rows) => rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\r\n')
+
 // References: key is the old HAO number ("67810"), or "tw253232" for a TaxonWorks source not cited in the ontology yet
 export const ref = (key) => hao.value?.refs[key]
 export const refPath = (key) => `/ref/${key}`

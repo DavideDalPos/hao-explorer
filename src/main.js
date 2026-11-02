@@ -6,6 +6,10 @@ import TermView from './views/TermView.vue'
 import RefView from './views/RefView.vue'
 import ReferencesView from './views/ReferencesView.vue'
 import ReleasesView from './views/ReleasesView.vue'
+import GroupView from './views/GroupView.vue'
+import CompareView from './views/CompareView.vue'
+import AboutView from './views/AboutView.vue'
+import StatsView from './views/StatsView.vue'
 import './style.css'
 
 const router = createRouter({
@@ -16,6 +20,10 @@ const router = createRouter({
     { path: '/term/:id', component: TermView, props: true },
     { path: '/references', component: ReferencesView },
     { path: '/releases', component: ReleasesView },
+    { path: '/group/:id', component: GroupView, props: true },
+    { path: '/compare', component: CompareView },
+    { path: '/about', component: AboutView },
+    { path: '/statistics', component: StatsView },
     { path: '/ref/:id', component: RefView, props: true },
     { path: '/:pathMatch(.*)*', redirect: '/' }
   ],

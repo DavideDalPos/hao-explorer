@@ -65,6 +65,22 @@ Follow [MAKING-A-RELEASE.md](MAKING-A-RELEASE.md). In short:
 3. `npm run dev` in hao-explorer: the term page shows the new synonym with its reference, and the Releases page
    lists it under "synonyms added".
 
+## Linking a reference to a group (Ichneumonidae, Apidae…)
+
+The ontology itself stays group-neutral. Which group a work dealt with is recorded in TaxonWorks, and the website
+shows it: a page per group with its works and the names they use, "Names by group" on each term page, and the group
+next to each reference.
+
+In the HAO project in TaxonWorks:
+
+1. Make sure the group exists as an **OTU** (linked to its taxon name, e.g. Chrysididae). Create it if needed.
+2. Open the OTU (Browse OTUs), click the **radial annotator** → **Citations** → find the source → add it, with the
+   pages if useful (e.g. `372-374`). A citation on the taxon name (Browse nomenclature) works too.
+3. That's all: restart `npm run dev` (or wait for the next online build) and the group appears on the References
+   page under "By group".
+
+Example: Lacaze-Duthiers 1849 → Chrysididae, pp. 372–374.
+
 ## Many at once
 
 For many synonyms or references at once (a list from a paper, say), Protégé is slow. A spreadsheet with the columns

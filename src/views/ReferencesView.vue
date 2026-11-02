@@ -32,6 +32,22 @@
     :aria-label="`${counts.linked} of ${counts.cited} references linked to TaxonWorks`"
   ><span :style="{ width: (100 * counts.linked) / Math.max(counts.cited, 1) + '%' }" /></div>
 
+  <template v-if="groupList.length">
+    <h2 class="sec">By group</h2>
+    <div class="regions">
+      <RouterLink
+        v-for="gr in groupList"
+        :key="gr.key"
+        class="chip"
+        :to="groupPath(gr.key)"
+      >{{ gr.n }} <span class="muted">{{ gr.works }}</span></RouterLink>
+      <RouterLink
+        class="chip"
+        to="/compare"
+      >Compare groups →</RouterLink>
+    </div>
+  </template>
+
   <h2 class="sec">Two centuries of names</h2>
   <ReferenceTimeline />
 
@@ -92,7 +108,7 @@
 
 <script setup>
 import { computed, onMounted, ref as vref } from 'vue'
-import { citedBy, hao, refPath } from '../lib/hao.js'
+import { citedBy, groupPath, hao, refPath, worksOfGroup } from '../lib/hao.js'
 import ReferenceTimeline from '../components/ReferenceTimeline.vue'
 
 const VIEWS = [['all', 'All'], ['linked', 'In TaxonWorks'], ['todo', 'Not linked yet']]
@@ -120,5 +136,10 @@ const shown = computed(() => {
     (view.value === 'all' || (view.value === 'linked' ? r.tw : !r.tw)) && (!s || r.low.includes(s))
   )
 })
+const groupList = computed(() =>
+  Object.entries(hao.value.groups || {})
+    .map(([key, gr]) => ({ key, n: gr.n, works: worksOfGroup(key).length }))
+    .sort((a, b) => a.n.localeCompare(b.n))
+)
 onMounted(() => (document.title = 'References — Hymenoptera Anatomy Ontology'))
 </script>

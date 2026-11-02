@@ -27,6 +27,7 @@
           <span class="idchip">{{ termId }}</span>
           <button class="btn" type="button" @click="copy(termId, $event)">Copy ID</button>
           <button class="btn" type="button" @click="copy(purl(termId), $event)">Copy PURL</button>
+          <button class="btn no-print" type="button" @click="print">Print or save as PDF</button>
         </div>
 
         <div
@@ -68,7 +69,7 @@
                 <td>
                   {{ text }}
                   <span v-if="kind === 'e'" class="kind">exact</span>
-                  <span v-else-if="kind === 'a'" class="kind">other language</span>
+                  <span v-else-if="kind === 'a'" class="kind">alternative label</span>
                 </td>
                 <td><RefList :refs="refs" :cites="cites" /></td>
               </tr>
@@ -98,12 +99,14 @@
           >No relations recorded.</p>
         </div>
 
-        <h2 class="sec">Network of connections</h2>
-        <TermNetwork :id="termId" />
+        <div class="no-print">
+          <h2 class="sec">Network of connections</h2>
+          <TermNetwork :id="termId" />
+        </div>
       </div>
 
       <aside class="side">
-        <div class="card">
+        <div :class="['card', { 'no-print': !figures.length }]">
           <h3>Image</h3>
           <SpecimenFigure
             v-for="f in figures"
@@ -116,6 +119,30 @@
             class="noimg"
           >
             No image linked yet.<br />Labelled photos and drawings of this part will appear here.
+          </div>
+        </div>
+
+        <div
+          v-if="byGroup.length"
+          class="card"
+        >
+          <h3>Names by group</h3>
+          <div
+            v-for="bg in byGroup"
+            :key="bg.key"
+            class="bygroup"
+          >
+            <RouterLink :to="groupPath(bg.key)"><b>{{ bg.n }}</b></RouterLink>
+            <p
+              v-for="(it, k) in bg.items"
+              :key="k"
+            >
+              {{ it.what === 'definition' ? 'definition' : `“${it.what}”` }}
+              <RouterLink
+                class="muted"
+                :to="refPath(it.ref)"
+              >{{ refShort(it.ref) }}</RouterLink>
+            </p>
           </div>
         </div>
 
@@ -176,7 +203,7 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { fromSlug, hao, lineage, olsUrl, purl, relationName, term, termName, termPath } from '../lib/hao.js'
+import { fromSlug, group, groupPath, groupsOf, hao, lineage, olsUrl, purl, refPath, refShort, relationName, term, termName, termPath } from '../lib/hao.js'
 import { figuresFor } from '../lib/figures.js'
 import RefList from '../components/RefList.vue'
 import TermChips from '../components/TermChips.vue'
@@ -204,7 +231,26 @@ const groups = computed(() => {
   ].filter(Boolean)
 })
 
+// the names this term carries in the works about each group (groups come from TaxonWorks)
+const byGroup = computed(() => {
+  const x = t.value
+  if (!x) return []
+  const out = {}
+  const add = (what, refKey) => {
+    for (const [gk] of groupsOf(refKey)) {
+      if (!group(gk)) continue
+      const e = (out[gk] ||= { key: gk, n: group(gk).n, items: [] })
+      if (!e.items.some((i) => i.what === what && i.ref === refKey)) e.items.push({ what, ref: refKey })
+    }
+  }
+  for (const r of x.dr || []) add('definition', r)
+  for (const [text, , refs] of x.s || []) for (const r of refs) add(text, r)
+  return Object.values(out).sort((a, b) => a.n.localeCompare(b.n))
+})
+
 watchEffect(() => (document.title = t.value ? `${t.value.n} — Hymenoptera Anatomy Ontology` : 'Hymenoptera Anatomy Ontology'))
+
+const print = () => window.print()
 
 function copy(text, e) {
   const btn = e.currentTarget
