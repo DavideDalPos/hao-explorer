@@ -52,6 +52,7 @@ To replace the old addresses in the ontology with TaxonWorks addresses, follow
 | [MAKING-A-RELEASE.md](MAKING-A-RELEASE.md) | Releasing a new version of HAO (ODK), naming it (HAO 2.x.y), and seeing it on the site |
 | [ADDING-REFERENCES.md](ADDING-REFERENCES.md) | Attaching a new reference to a term or a synonym (TaxonWorks + Protégé) |
 | [UPDATING-REFERENCES.md](UPDATING-REFERENCES.md) | Moving the old HAO references to TaxonWorks, in batches |
+| [HOW-IT-WAS-BUILT.md](HOW-IT-WAS-BUILT.md) | How the website works and was built: data sources, scripts, pages, decisions |
 
 ## How the project is organised
 
